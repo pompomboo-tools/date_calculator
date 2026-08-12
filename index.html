@@ -9,7 +9,18 @@
 <title>日付計算</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#637083;--primary:#2563eb;--dark:#1d4ed8;--border:#dbe2ea;--result:#eef5ff}
-*,*::before,*::after{box-sizing:border-box}html,body{width:100%;max-width:100%;margin:0}body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;color:var(--text);background:var(--bg);display:grid;place-items:center;padding:24px}main{width:min(720px,100%);min-width:0}.page-title{margin:0 0 12px;padding:0 6px;font-size:clamp(1.25rem,3.5vw,1.75rem);line-height:1.35}.card{width:100%;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:0 12px 35px rgba(27,43,74,.1);padding:clamp(24px,5vw,36px)}.field{margin-bottom:22px}.input-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,.8fr) minmax(170px,1.2fr);gap:20px;align-items:start}label,legend{display:block;font-weight:700;margin-bottom:9px;font-size:.95rem}input[type=text],input[type=number],input[type=date],select{width:100%;min-width:0;max-width:100%;min-height:50px;border:1px solid var(--border);border-radius:12px;padding:10px 14px;font:inherit;color:var(--text);background:#fff;outline:none}input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}fieldset{border:0;padding:0;margin:0;min-width:0}.radio-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}.radio-option{position:relative;border:1px solid var(--border);border-radius:12px;min-height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700}.radio-option:has(input:checked){border-color:var(--primary);background:#eff6ff;color:var(--dark)}.radio-option input{position:absolute;opacity:0}button{border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer}.quick-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 14px}.quick-button{min-width:0;min-height:48px;padding:10px 12px;background:#fff;color:var(--dark);border:1px solid #aac7f8}.quick-button:hover{background:#eff6ff;border-color:var(--primary)}.calculate{width:100%;min-height:54px;background:var(--primary);color:#fff;font-size:1.05rem}.calculate:hover{background:var(--dark)}.result{margin-top:26px;padding:24px;border-radius:16px;background:var(--result);border:1px solid #c9ddff;text-align:center}.result-label{color:var(--muted);font-size:.9rem;margin-bottom:8px}.result-date{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;line-height:1.35}.result-description{margin:8px 0 0;color:var(--muted)}.note{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:.86rem;line-height:1.7}.error{color:#b42318;font-size:.88rem;margin-top:7px;min-height:1.4em}
+*,*::before,*::after{box-sizing:border-box}html,body{width:100%;max-width:100%;margin:0}body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;color:var(--text);background:var(--bg);display:grid;place-items:center;padding:24px}main{width:min(720px,100%);min-width:0}.page-title{margin:0 0 12px;padding:0 6px;font-size:clamp(1.25rem,3.5vw,1.75rem);line-height:1.35}.card{width:100%;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:0 12px 35px rgba(27,43,74,.1);padding:clamp(24px,5vw,36px)}
+
+/* パラメーター入力エリアのスタイリング */
+.params-group {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 0 0 24px 0;
+  background: #f8fafc;
+}
+
+.field{margin-bottom:12px}.input-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,.8fr) minmax(170px,1.2fr);gap:20px;align-items:start;margin-bottom:6px}.input-row .field{margin-bottom:0}label,legend{display:block;font-weight:700;margin-bottom:6px;font-size:.95rem}input[type=text],input[type=number],input[type=date],select{width:100%;min-width:0;max-width:100%;min-height:50px;border:1px solid var(--border);border-radius:12px;padding:10px 14px;font:inherit;color:var(--text);background:#fff;outline:none}input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}fieldset{border:0;padding:0;margin:0;min-width:0}.radio-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}.radio-option{position:relative;border:1px solid var(--border);border-radius:12px;min-height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;background:#fff}.radio-option:has(input:checked){border-color:var(--primary);background:#eff6ff;color:var(--dark)}.radio-option:has(input:disabled){opacity:.45;cursor:not-allowed;background:#f4f7fb;border-color:var(--border);color:var(--muted)}.radio-option input{position:absolute;opacity:0}button{border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer}.quick-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:24px 0 14px}.quick-button{min-width:0;min-height:48px;padding:10px 12px;background:#fff;color:var(--dark);border:1px solid #aac7f8}.quick-button:hover{background:#eff6ff;border-color:var(--primary)}.calculate{width:100%;min-height:54px;background:var(--primary);color:#fff;font-size:1.05rem}.calculate:hover{background:var(--dark)}.result{margin-top:26px;padding:24px;border-radius:16px;background:var(--result);border:1px solid #c9ddff;text-align:center}.result-label{color:var(--muted);font-size:.9rem;margin-bottom:8px}.result-date{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;line-height:1.35}.result-description{margin:8px 0 0;color:var(--muted)}.note{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:.86rem;line-height:1.7}.error{color:#b42318;font-size:.88rem;margin-top:4px;min-height:1.2em}
 
 .desktop-date-input {
   display: flex;
@@ -79,22 +90,24 @@
   body{min-height:100dvh;display:block;padding:6px;background:var(--bg)}
   main{width:100%}
   .card{padding:10px 10px 9px;border-radius:14px;box-shadow:0 5px 18px rgba(27,43,74,.08)}
-  .field{margin-bottom:8px}
+  .params-group{padding:10px;border-radius:12px;margin-bottom:12px}
+  .field{margin-bottom:10px}
+  .field:last-child{margin-bottom:0}
   label,legend{margin-bottom:4px;font-size:.79rem;line-height:1.15}
-  .base-date-field{margin-bottom:7px}
+  .base-date-field{margin-bottom:10px}
   .mobile-date-pickers{grid-template-columns:1.35fr .82fr .82fr;gap:6px}
   .mobile-date-pickers .picker-field>label{display:none}
   .picker-field{min-width:0}
   .picker-field select,#amount,#unit,.radio-option{height:40px;min-height:40px;max-height:40px}
   .picker-field select,input[type=number],input[type=text],select,button,.radio-option{font-size:16px;touch-action:manipulation}
   .picker-field select{padding:5px 7px;border-radius:9px}
-  .input-row{grid-template-columns:minmax(0,.82fr) minmax(0,.82fr) minmax(0,1.35fr);gap:6px;align-items:start}
-  .input-row .field{margin-bottom:7px}
+  .input-row{grid-template-columns:minmax(0,.82fr) minmax(0,.82fr) minmax(0,1.35fr);gap:6px;align-items:start;margin-bottom:6px}
+  .input-row .field{margin-bottom:0}
   .radio-group{gap:4px}
   .radio-option{border-radius:9px}
   .error{min-height:0;margin-top:3px;font-size:.72rem;line-height:1.2}
   .error:empty{display:none}
-  .quick-settings{gap:6px;margin:0 0 7px}
+  .quick-settings{gap:6px;margin:16px 0 9px}
   .quick-button{min-height:38px;padding:5px 4px;border-radius:9px}
   .action-buttons{grid-template-columns:minmax(82px,.38fr) minmax(0,1fr);gap:6px}
   .clear,.calculate{min-height:42px;border-radius:9px;font-size:16px}
@@ -113,6 +126,8 @@
 </head>
 <body><main><h1 id="page-title" class="page-title">日付計算</h1><section class="card" aria-labelledby="page-title">
 <form id="dateForm" novalidate>
+
+<fieldset class="params-group">
 <div class="field base-date-field">
 <label for="baseDate">基準日</label>
 <div class="desktop-date-input">
@@ -131,17 +146,31 @@
 <div class="field"><label for="unit">単位</label><select id="unit"><option value="day">日</option><option value="week">週間</option><option value="month">カ月</option><option value="year">年</option></select></div>
 <fieldset class="field"><legend>方向</legend><div class="radio-group"><label class="radio-option"><input type="radio" name="direction" value="past" checked>前</label><label class="radio-option"><input type="radio" name="direction" value="future">後</label></div></fieldset>
 </div>
+<div class="field" style="margin-bottom:0;">
+<fieldset><legend>初日</legend><div class="radio-group"><label class="radio-option"><input type="radio" name="firstDay" value="exclude" checked>含めない</label><label class="radio-option"><input type="radio" name="firstDay" value="include">含める</label></div></fieldset>
+</div>
+</fieldset>
+
 <div class="quick-settings" aria-label="便利な設定"><button class="quick-button" type="button" data-amount="45" data-unit="day">45日前</button><button class="quick-button" type="button" data-amount="3" data-unit="month">3カ月前</button></div>
 <div class="action-buttons"><button class="clear" id="clearButton" type="button">クリア</button><button class="calculate" type="submit">日付を計算する</button></div></form>
 <section class="result" aria-live="polite"><div class="result-label">計算結果</div><div id="resultDate" class="result-date">－</div><div id="resultDescription" class="result-description">条件を入力してください</div></section>
-<p class="note">※「1日前」は基準日の前日として計算する。<br>※月・年の計算で同じ日が存在しない場合は、その月の末日とする。</p>
+<p class="note">※月・年の計算で同じ日が存在しない場合は、その月の末日とする。</p>
 </section></main>
 <script>
 'use strict';
 const form=document.getElementById('dateForm'),baseDateInput=document.getElementById('baseDate'),baseDatePicker=document.getElementById('baseDatePicker'),baseDateError=document.getElementById('baseDateError'),amountInput=document.getElementById('amount'),unitInput=document.getElementById('unit'),amountError=document.getElementById('amountError'),resultDate=document.getElementById('resultDate'),resultDescription=document.getElementById('resultDescription'),yearPicker=document.getElementById('yearPicker'),monthPicker=document.getElementById('monthPicker'),dayPicker=document.getElementById('dayPicker'),clearButton=document.getElementById('clearButton');
+const firstDayInputs=document.querySelectorAll('input[name="firstDay"]');
 const labels={day:'日',week:'週間',month:'カ月',year:'年'},weekdays=['日','月','火','水','木','金','土'];
 const pad=n=>String(n).padStart(2,'0');
 const inputDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+function updateFirstDayState(){
+  const isDay = unitInput.value === 'day';
+  firstDayInputs.forEach(input => {
+    input.disabled = !isDay;
+  });
+}
+
 function parseDate(v){
   const match=v.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if(!match)return null;
@@ -180,16 +209,47 @@ function updateDateFromPickers(){
   baseDateError.textContent='';
 }
 function addMonths(d,m){const r=new Date(d),day=r.getDate();r.setDate(1);r.setMonth(r.getMonth()+m);const last=new Date(r.getFullYear(),r.getMonth()+1,0,12).getDate();r.setDate(Math.min(day,last));return r}
-function calculate(base,n,unit,sign){const r=new Date(base);if(unit==='day')r.setDate(r.getDate()+sign*n);if(unit==='week')r.setDate(r.getDate()+sign*n*7);if(unit==='month')return addMonths(r,sign*n);if(unit==='year')return addMonths(r,sign*n*12);return r}
+function calculate(base,n,unit,sign,includeFirstDay){
+  const r=new Date(base);
+  if(unit==='day'){
+    let days = n;
+    if(includeFirstDay && n > 0){
+      days = n - 1;
+    }
+    r.setDate(r.getDate()+sign*days);
+  }
+  if(unit==='week')r.setDate(r.getDate()+sign*n*7);
+  if(unit==='month')return addMonths(r,sign*n);
+  if(unit==='year')return addMonths(r,sign*n*12);
+  return r;
+}
 function showResult(){
   baseDateError.textContent='';amountError.textContent='';
   const base=parseDate(baseDateInput.value),value=amountInput.value.trim(),n=Number(value);
   if(!base){baseDateError.textContent=baseDateInput.value.trim()===''?'基準日を入力してください。':'実在する日付をYYYY-MM-DD形式で入力してください。';resultDate.textContent='－';resultDescription.textContent='入力内容を確認してください';return}
   if(value===''||!Number.isInteger(n)||n<0){amountError.textContent=value===''?'数値を入力してください。':'0以上の整数を入力してください。';resultDate.textContent='－';resultDescription.textContent='入力内容を確認してください';return}
-  const direction=document.querySelector('input[name="direction"]:checked').value,sign=direction==='past'?-1:1,answer=calculate(base,n,unitInput.value,sign);
-  resultDate.textContent=format(answer);resultDescription.textContent=`${format(base)}の${n}${labels[unitInput.value]}${direction==='past'?'前':'後'}`;
+  const direction=document.querySelector('input[name="direction"]:checked').value;
+  const firstDayVal=document.querySelector('input[name="firstDay"]:checked').value;
+  const includeFirstDay=(unitInput.value==='day' && firstDayVal==='include');
+  const sign=direction==='past'?-1:1;
+  const answer=calculate(base,n,unitInput.value,sign,includeFirstDay);
+  
+  resultDate.textContent=format(answer);
+  resultDescription.textContent=`${format(base)}の${n}${labels[unitInput.value]}${direction==='past'?'前':'後'}${includeFirstDay ? '（初日含める）' : ''}`;
 }
-document.querySelectorAll('.quick-button').forEach(button=>button.addEventListener('click',()=>{amountInput.value=button.dataset.amount;unitInput.value=button.dataset.unit;document.querySelector('input[name="direction"][value="past"]').checked=true;showResult()}));
+
+unitInput.addEventListener('change',()=>{
+  updateFirstDayState();
+});
+
+document.querySelectorAll('.quick-button').forEach(button=>button.addEventListener('click',()=>{
+  amountInput.value=button.dataset.amount;
+  unitInput.value=button.dataset.unit;
+  updateFirstDayState();
+  document.querySelector('input[name="direction"][value="past"]').checked=true;
+  showResult();
+}));
+
 form.addEventListener('submit',e=>{e.preventDefault();showResult()});
 clearButton.addEventListener('click',()=>{
   const todayStr = inputDate(new Date());
@@ -198,6 +258,8 @@ clearButton.addEventListener('click',()=>{
   syncPickersFromText();
   amountInput.value='';unitInput.value='day';
   document.querySelector('input[name="direction"][value="past"]').checked=true;
+  document.querySelector('input[name="firstDay"][value="exclude"]').checked=true;
+  updateFirstDayState();
   baseDateError.textContent='';amountError.textContent='';
   resultDate.textContent='－';resultDescription.textContent='条件を入力してください';
 });
@@ -229,5 +291,6 @@ const today = inputDate(new Date());
 baseDateInput.value = today;
 baseDatePicker.value = today;
 buildMobilePickers();
+updateFirstDayState();
 resultDate.textContent='－';resultDescription.textContent='条件を入力してください';baseDateError.textContent='';amountError.textContent='';
 </script></body></html>
