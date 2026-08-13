@@ -1,0 +1,544 @@
+@charset "UTF-8";
+
+:root {
+  --bg: #f4f7fb;
+  --card: #fff;
+  --text: #172033;
+  --muted: #637083;
+  --primary: #2563eb;
+  --dark: #1d4ed8;
+  --border: #dbe2ea;
+  --result: #eef5ff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+main {
+  width: min(720px, 100%);
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0 0 12px;
+  padding: 0 6px;
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+  line-height: 1.35;
+}
+
+.card {
+  width: 100%;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 12px 35px rgba(27, 43, 74, 0.1);
+  padding: clamp(24px, 5vw, 36px);
+}
+
+/* パラメーター入力エリアのスタイリング */
+.params-group {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 0 0 24px 0;
+  background: #f8fafc;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field-mb-0 {
+  margin-bottom: 0;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(110px, 0.8fr) minmax(170px, 1.2fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 6px;
+}
+
+.input-row .field {
+  margin-bottom: 0;
+}
+
+label,
+legend {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 50px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.radio-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.radio-option {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  background: #fff;
+}
+
+.radio-option:has(input:checked) {
+  border-color: var(--primary);
+  background: #eff6ff;
+  color: var(--dark);
+}
+
+.radio-option:has(input:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f4f7fb;
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.radio-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quick-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0 14px;
+}
+
+.quick-button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--dark);
+  border: 1px solid #aac7f8;
+}
+
+.quick-button:hover {
+  background: #eff6ff;
+  border-color: var(--primary);
+}
+
+.calculate {
+  width: 100%;
+  min-height: 54px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+.calculate:hover {
+  background: var(--dark);
+}
+
+.result {
+  margin-top: 26px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--result);
+  border: 1px solid #c9ddff;
+  text-align: center;
+}
+
+.result-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.result-date {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.result-description {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.note {
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.error {
+  color: #b42318;
+  font-size: 0.88rem;
+  margin-top: 4px;
+  min-height: 1.2em;
+}
+
+.desktop-date-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.desktop-date-input input[type="text"] {
+  flex: 1;
+}
+
+.desktop-date-input input[type="date"] {
+  position: relative;
+  width: 50px;
+  min-width: 50px;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #aac7f8;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%231d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+}
+
+.desktop-date-input input[type="date"]:hover {
+  background-color: #eff6ff;
+  border-color: var(--primary);
+}
+
+.desktop-date-input input[type="date"]::-webkit-datetime-edit {
+  display: none;
+}
+
+.desktop-date-input input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.mobile-date-pickers {
+  display: none;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.36fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.clear {
+  min-height: 54px;
+  background: #fff;
+  color: var(--dark);
+  border: 1px solid #aac7f8;
+  font-size: 1rem;
+}
+
+.clear:hover {
+  background: #eff6ff;
+  border-color: var(--primary);
+}
+
+/* レスポンシブ対応 (ブレイクポイント: 580px) */
+@media (max-width: 580px) {
+  body {
+    padding: 6px;
+    overflow-x: hidden;
+    min-height: 100dvh;
+    display: block;
+    background: var(--bg);
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    margin: 4px 0 10px;
+    padding: 0 2px;
+    font-weight: 700;
+  }
+
+  .card {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 10px 9px;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(27, 43, 74, 0.08);
+  }
+
+  .params-group {
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .field {
+    margin-bottom: 10px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .field:last-child {
+    margin-bottom: 0;
+  }
+
+  .base-date-field {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  label,
+  legend {
+    margin-bottom: 4px;
+    font-size: 0.79rem;
+    line-height: 1.15;
+  }
+
+  .desktop-date-input {
+    display: none;
+  }
+
+  .mobile-date-pickers {
+    display: grid;
+    grid-template-columns: 1.35fr 0.82fr 0.82fr;
+    gap: 6px;
+  }
+
+  .mobile-date-pickers .picker-field > label {
+    display: none;
+  }
+
+  .picker-field {
+    min-width: 0;
+  }
+
+  .picker-field label {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .picker-field select,
+  #amount,
+  #unit,
+  .radio-option {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+  }
+
+  .picker-field select,
+  input[type="number"],
+  input[type="text"],
+  select,
+  button,
+  .radio-option {
+    font-size: 16px;
+    touch-action: manipulation;
+  }
+
+  .picker-field select {
+    width: 100%;
+    padding: 5px 7px;
+    border-radius: 9px;
+    background: #fff;
+    font-weight: 700;
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .input-row {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 0.82fr) minmax(0, 1.35fr);
+    gap: 6px;
+    align-items: start;
+    margin-bottom: 6px;
+  }
+
+  .input-row .field {
+    margin-bottom: 0;
+  }
+
+  .radio-group {
+    min-width: 0;
+    max-width: 100%;
+    gap: 4px;
+  }
+
+  .radio-option {
+    border-radius: 9px;
+  }
+
+  .quick-settings {
+    min-width: 0;
+    max-width: 100%;
+    gap: 6px;
+    margin: 16px 0 9px;
+  }
+
+  .quick-button {
+    min-height: 38px;
+    padding: 5px 4px;
+    border-radius: 9px;
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .action-buttons {
+    grid-template-columns: minmax(82px, 0.38fr) minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .clear,
+  .calculate {
+    min-height: 42px;
+    border-radius: 9px;
+    font-size: 16px;
+  }
+
+  .result {
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 8px;
+    padding: 9px 7px;
+    border-radius: 11px;
+  }
+
+  .result-label {
+    margin-bottom: 2px;
+    font-size: 0.72rem;
+  }
+
+  .result-date {
+    font-size: clamp(1.15rem, 5.4vw, 1.48rem);
+    line-height: 1.22;
+  }
+
+  .result-description {
+    margin-top: 3px;
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  .note {
+    margin-top: 7px;
+    padding-top: 6px;
+    font-size: 0.66rem;
+    line-height: 1.3;
+  }
+
+  .error {
+    min-height: 0;
+    margin-top: 3px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .error:empty {
+    display: none;
+  }
+}
+
+/* レスポンシブ対応 (超小型画面) */
+@media (max-width: 350px) {
+  .card {
+    padding-inline: 8px;
+  }
+
+  .input-row {
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 0.78fr) minmax(0, 1.3fr);
+    gap: 4px;
+  }
+
+  .radio-group {
+    gap: 3px;
+  }
+}
+
+@media (max-width: 279px) {
+  body {
+    min-width: 280px;
+    overflow-x: auto;
+  }
+}
