@@ -1,296 +1,107 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="./favicon.png" type="image/png" sizes="32x32">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180">
-<title>日付計算</title>
-<style>
-:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#637083;--primary:#2563eb;--dark:#1d4ed8;--border:#dbe2ea;--result:#eef5ff}
-*,*::before,*::after{box-sizing:border-box}html,body{width:100%;max-width:100%;margin:0}body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;color:var(--text);background:var(--bg);display:grid;place-items:center;padding:24px}main{width:min(720px,100%);min-width:0}.page-title{margin:0 0 12px;padding:0 6px;font-size:clamp(1.25rem,3.5vw,1.75rem);line-height:1.35}.card{width:100%;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:0 12px 35px rgba(27,43,74,.1);padding:clamp(24px,5vw,36px)}
-
-/* パラメーター入力エリアのスタイリング */
-.params-group {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin: 0 0 24px 0;
-  background: #f8fafc;
-}
-
-.field{margin-bottom:12px}.input-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,.8fr) minmax(170px,1.2fr);gap:20px;align-items:start;margin-bottom:6px}.input-row .field{margin-bottom:0}label,legend{display:block;font-weight:700;margin-bottom:6px;font-size:.95rem}input[type=text],input[type=number],input[type=date],select{width:100%;min-width:0;max-width:100%;min-height:50px;border:1px solid var(--border);border-radius:12px;padding:10px 14px;font:inherit;color:var(--text);background:#fff;outline:none}input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.12)}fieldset{border:0;padding:0;margin:0;min-width:0}.radio-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}.radio-option{position:relative;border:1px solid var(--border);border-radius:12px;min-height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;background:#fff}.radio-option:has(input:checked){border-color:var(--primary);background:#eff6ff;color:var(--dark)}.radio-option:has(input:disabled){opacity:.45;cursor:not-allowed;background:#f4f7fb;border-color:var(--border);color:var(--muted)}.radio-option input{position:absolute;opacity:0}button{border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer}.quick-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:24px 0 14px}.quick-button{min-width:0;min-height:48px;padding:10px 12px;background:#fff;color:var(--dark);border:1px solid #aac7f8}.quick-button:hover{background:#eff6ff;border-color:var(--primary)}.calculate{width:100%;min-height:54px;background:var(--primary);color:#fff;font-size:1.05rem}.calculate:hover{background:var(--dark)}.result{margin-top:26px;padding:24px;border-radius:16px;background:var(--result);border:1px solid #c9ddff;text-align:center}.result-label{color:var(--muted);font-size:.9rem;margin-bottom:8px}.result-date{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;line-height:1.35}.result-description{margin:8px 0 0;color:var(--muted)}.note{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:.86rem;line-height:1.7}.error{color:#b42318;font-size:.88rem;margin-top:4px;min-height:1.2em}
-
-.desktop-date-input {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.desktop-date-input input[type=text] {
-  flex: 1;
-}
-.desktop-date-input input[type=date] {
-  position: relative;
-  width: 50px;
-  min-width: 50px;
-  padding: 0;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #aac7f8;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.desktop-date-input input[type=date]:hover {
-  background-color: #eff6ff;
-  border-color: var(--primary);
-}
-
-.desktop-date-input input[type=date]::-webkit-datetime-edit {
-  display: none;
-}
-.desktop-date-input input[type=date]::-webkit-calendar-picker-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  opacity: 0;
-}
-
-.desktop-date-input input[type=date] {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%231d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 20px 20px;
-}
-
-.mobile-date-pickers{display:none}
-
-@media(max-width:580px){
-  body{padding:12px;overflow-x:hidden}.page-title{font-size:1.5rem;margin:4px 0 10px;padding:0 2px;font-weight:700}.card{width:100%;min-width:0;padding:24px 18px;border-radius:18px}.input-row{width:100%;min-width:0;grid-template-columns:minmax(0,1fr);gap:0}.field,.radio-group,.quick-settings,.result{min-width:0;max-width:100%}.base-date-field{width:100%;min-width:0;overflow:hidden}
-  
-  .desktop-date-input{display:none}
-  .mobile-date-pickers{display:grid;grid-template-columns:1.35fr .9fr .9fr;gap:10px}
-  
-  .picker-field{min-width:0}.picker-field label{font-size:.82rem;color:var(--muted);margin-bottom:6px}.picker-field select{width:100%;min-height:52px;padding:8px 10px;background:#fff;font-weight:700;text-align:center;text-align-last:center}.quick-settings{gap:8px}.quick-button{padding-inline:6px;font-size:.92rem;white-space:nowrap}
-}
-@media(max-width:279px){body{min-width:280px;overflow-x:auto}}
-
-.action-buttons{display:grid;grid-template-columns:minmax(96px,.36fr) minmax(0,1fr);gap:10px}
-.clear{min-height:54px;background:#fff;color:var(--dark);border:1px solid #aac7f8;font-size:1rem}
-.clear:hover{background:#eff6ff;border-color:var(--primary)}
-
-@media(max-width:580px){
-  body{min-height:100dvh;display:block;padding:6px;background:var(--bg)}
-  main{width:100%}
-  .card{padding:10px 10px 9px;border-radius:14px;box-shadow:0 5px 18px rgba(27,43,74,.08)}
-  .params-group{padding:10px;border-radius:12px;margin-bottom:12px}
-  .field{margin-bottom:10px}
-  .field:last-child{margin-bottom:0}
-  label,legend{margin-bottom:4px;font-size:.79rem;line-height:1.15}
-  .base-date-field{margin-bottom:10px}
-  .mobile-date-pickers{grid-template-columns:1.35fr .82fr .82fr;gap:6px}
-  .mobile-date-pickers .picker-field>label{display:none}
-  .picker-field{min-width:0}
-  .picker-field select,#amount,#unit,.radio-option{height:40px;min-height:40px;max-height:40px}
-  .picker-field select,input[type=number],input[type=text],select,button,.radio-option{font-size:16px;touch-action:manipulation}
-  .picker-field select{padding:5px 7px;border-radius:9px}
-  .input-row{grid-template-columns:minmax(0,.82fr) minmax(0,.82fr) minmax(0,1.35fr);gap:6px;align-items:start;margin-bottom:6px}
-  .input-row .field{margin-bottom:0}
-  .radio-group{gap:4px}
-  .radio-option{border-radius:9px}
-  .error{min-height:0;margin-top:3px;font-size:.72rem;line-height:1.2}
-  .error:empty{display:none}
-  .quick-settings{gap:6px;margin:16px 0 9px}
-  .quick-button{min-height:38px;padding:5px 4px;border-radius:9px}
-  .action-buttons{grid-template-columns:minmax(82px,.38fr) minmax(0,1fr);gap:6px}
-  .clear,.calculate{min-height:42px;border-radius:9px;font-size:16px}
-  .result{margin-top:8px;padding:9px 7px;border-radius:11px}
-  .result-label{margin-bottom:2px;font-size:.72rem}
-  .result-date{font-size:clamp(1.15rem,5.4vw,1.48rem);line-height:1.22}
-  .result-description{margin-top:3px;font-size:.72rem;line-height:1.25}
-  .note{margin-top:7px;padding-top:6px;font-size:.66rem;line-height:1.3}
-}
-@media(max-width:350px){
-  .card{padding-inline:8px}
-  .input-row{grid-template-columns:minmax(0,.78fr) minmax(0,.78fr) minmax(0,1.3fr);gap:4px}
-  .radio-group{gap:3px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="./favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180">
+  <title>日付計算</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body><main><h1 id="page-title" class="page-title">日付計算</h1><section class="card" aria-labelledby="page-title">
-<form id="dateForm" novalidate>
+<body>
+  <main>
+    <h1 id="page-title" class="page-title">日付計算</h1>
+    <section class="card" aria-labelledby="page-title">
+      <form id="dateForm" novalidate>
+        <fieldset class="params-group">
+          <div class="field base-date-field">
+            <label for="baseDate">基準日</label>
+            <div class="desktop-date-input">
+              <input id="baseDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="baseDateError" required>
+              <input id="baseDatePicker" type="date" aria-label="カレンダーから日付を選択">
+            </div>
+            <div id="mobileDatePickers" class="mobile-date-pickers" aria-label="基準日を年月日で設定">
+              <div class="picker-field">
+                <label for="yearPicker">年</label>
+                <select id="yearPicker" aria-label="年"></select>
+              </div>
+              <div class="picker-field">
+                <label for="monthPicker">月</label>
+                <select id="monthPicker" aria-label="月"></select>
+              </div>
+              <div class="picker-field">
+                <label for="dayPicker">日</label>
+                <select id="dayPicker" aria-label="日"></select>
+              </div>
+            </div>
+            <div id="baseDateError" class="error" role="alert"></div>
+          </div>
 
-<fieldset class="params-group">
-<div class="field base-date-field">
-<label for="baseDate">基準日</label>
-<div class="desktop-date-input">
-  <input id="baseDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="baseDateError" required>
-  <input id="baseDatePicker" type="date" aria-label="カレンダーから日付を選択">
-</div>
-<div id="mobileDatePickers" class="mobile-date-pickers" aria-label="基準日を年月日で設定">
-  <div class="picker-field"><label for="yearPicker">年</label><select id="yearPicker" aria-label="年"></select></div>
-  <div class="picker-field"><label for="monthPicker">月</label><select id="monthPicker" aria-label="月"></select></div>
-  <div class="picker-field"><label for="dayPicker">日</label><select id="dayPicker" aria-label="日"></select></div>
-</div>
-<div id="baseDateError" class="error" role="alert"></div>
-</div>
-<div class="input-row">
-<div class="field"><label for="amount">数値</label><input id="amount" type="number" min="0" step="1" inputmode="numeric" required><div id="amountError" class="error" role="alert"></div></div>
-<div class="field"><label for="unit">単位</label><select id="unit"><option value="day">日</option><option value="week">週間</option><option value="month">カ月</option><option value="year">年</option></select></div>
-<fieldset class="field"><legend>方向</legend><div class="radio-group"><label class="radio-option"><input type="radio" name="direction" value="past" checked>前</label><label class="radio-option"><input type="radio" name="direction" value="future">後</label></div></fieldset>
-</div>
-<div class="field" style="margin-bottom:0;">
-<fieldset><legend>初日</legend><div class="radio-group"><label class="radio-option"><input type="radio" name="firstDay" value="exclude" checked>含めない</label><label class="radio-option"><input type="radio" name="firstDay" value="include">含める</label></div></fieldset>
-</div>
-</fieldset>
+          <div class="input-row">
+            <div class="field">
+              <label for="amount">数値</label>
+              <input id="amount" type="number" min="0" step="1" inputmode="numeric" required>
+              <div id="amountError" class="error" role="alert"></div>
+            </div>
+            <div class="field">
+              <label for="unit">単位</label>
+              <select id="unit">
+                <option value="day">日</option>
+                <option value="week">週間</option>
+                <option value="month">カ月</option>
+                <option value="year">年</option>
+              </select>
+            </div>
+            <fieldset class="field">
+              <legend>方向</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="direction" value="past" checked>前
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="direction" value="future">後
+                </label>
+              </div>
+            </fieldset>
+          </div>
 
-<div class="quick-settings" aria-label="便利な設定"><button class="quick-button" type="button" data-amount="45" data-unit="day">45日前</button><button class="quick-button" type="button" data-amount="3" data-unit="month">3カ月前</button></div>
-<div class="action-buttons"><button class="clear" id="clearButton" type="button">クリア</button><button class="calculate" type="submit">日付を計算する</button></div></form>
-<section class="result" aria-live="polite"><div class="result-label">計算結果</div><div id="resultDate" class="result-date">－</div><div id="resultDescription" class="result-description">条件を入力してください</div></section>
-<p class="note">※月・年の計算で同じ日が存在しない場合は、その月の末日とする。</p>
-</section></main>
-<script>
-'use strict';
-const form=document.getElementById('dateForm'),baseDateInput=document.getElementById('baseDate'),baseDatePicker=document.getElementById('baseDatePicker'),baseDateError=document.getElementById('baseDateError'),amountInput=document.getElementById('amount'),unitInput=document.getElementById('unit'),amountError=document.getElementById('amountError'),resultDate=document.getElementById('resultDate'),resultDescription=document.getElementById('resultDescription'),yearPicker=document.getElementById('yearPicker'),monthPicker=document.getElementById('monthPicker'),dayPicker=document.getElementById('dayPicker'),clearButton=document.getElementById('clearButton');
-const firstDayInputs=document.querySelectorAll('input[name="firstDay"]');
-const labels={day:'日',week:'週間',month:'カ月',year:'年'},weekdays=['日','月','火','水','木','金','土'];
-const pad=n=>String(n).padStart(2,'0');
-const inputDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+          <div class="field field-mb-0">
+            <fieldset>
+              <legend>初日</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="firstDay" value="exclude" checked>含めない
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="firstDay" value="include">含める
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </fieldset>
 
-function updateFirstDayState(){
-  const isDay = unitInput.value === 'day';
-  firstDayInputs.forEach(input => {
-    input.disabled = !isDay;
-  });
-}
+        <div class="quick-settings" aria-label="便利な設定">
+          <button class="quick-button" type="button" data-amount="45" data-unit="day">45日前</button>
+          <button class="quick-button" type="button" data-amount="3" data-unit="month">3カ月前</button>
+        </div>
 
-function parseDate(v){
-  const match=v.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-  if(!match)return null;
-  const y=Number(match[1]),m=Number(match[2]),d=Number(match[3]);
-  const date=new Date(y,m-1,d,12);
-  return date.getFullYear()===y&&date.getMonth()===m-1&&date.getDate()===d?date:null;
-}
-const format=d=>`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${weekdays[d.getDay()]}）`;
-function daysInMonth(y,m){return new Date(y,m,0,12).getDate()}
-function addOption(select,value,label){const option=document.createElement('option');option.value=value;option.textContent=label;select.appendChild(option)}
-function buildMobilePickers(){
-  for(let y=1900;y<=2100;y++)addOption(yearPicker,y,`${y}年`);
-  for(let m=1;m<=12;m++)addOption(monthPicker,m,`${m}月`);
-  syncPickersFromText();
-}
-function rebuildDays(selectedDay){
-  const y=Number(yearPicker.value),m=Number(monthPicker.value),last=daysInMonth(y,m);
-  dayPicker.replaceChildren();
-  for(let d=1;d<=last;d++)addOption(dayPicker,d,`${d}日`);
-  dayPicker.value=Math.min(Number(selectedDay)||1,last);
-}
-function syncPickersFromText(){
-  const d=parseDate(baseDateInput.value)||new Date();
-  const formattedDate=inputDate(d);
-  yearPicker.value=d.getFullYear();
-  monthPicker.value=d.getMonth()+1;
-  rebuildDays(d.getDate());
-  baseDatePicker.value=formattedDate;
-}
-function updateDateFromPickers(){
-  const previousDay=Number(dayPicker.value)||1;
-  rebuildDays(previousDay);
-  const formattedDate=`${yearPicker.value}-${pad(monthPicker.value)}-${pad(dayPicker.value)}`;
-  baseDateInput.value=formattedDate;
-  baseDatePicker.value=formattedDate;
-  baseDateError.textContent='';
-}
-function addMonths(d,m){const r=new Date(d),day=r.getDate();r.setDate(1);r.setMonth(r.getMonth()+m);const last=new Date(r.getFullYear(),r.getMonth()+1,0,12).getDate();r.setDate(Math.min(day,last));return r}
-function calculate(base,n,unit,sign,includeFirstDay){
-  const r=new Date(base);
-  if(unit==='day'){
-    let days = n;
-    if(includeFirstDay && n > 0){
-      days = n - 1;
-    }
-    r.setDate(r.getDate()+sign*days);
-  }
-  if(unit==='week')r.setDate(r.getDate()+sign*n*7);
-  if(unit==='month')return addMonths(r,sign*n);
-  if(unit==='year')return addMonths(r,sign*n*12);
-  return r;
-}
-function showResult(){
-  baseDateError.textContent='';amountError.textContent='';
-  const base=parseDate(baseDateInput.value),value=amountInput.value.trim(),n=Number(value);
-  if(!base){baseDateError.textContent=baseDateInput.value.trim()===''?'基準日を入力してください。':'実在する日付をYYYY-MM-DD形式で入力してください。';resultDate.textContent='－';resultDescription.textContent='入力内容を確認してください';return}
-  if(value===''||!Number.isInteger(n)||n<0){amountError.textContent=value===''?'数値を入力してください。':'0以上の整数を入力してください。';resultDate.textContent='－';resultDescription.textContent='入力内容を確認してください';return}
-  const direction=document.querySelector('input[name="direction"]:checked').value;
-  const firstDayVal=document.querySelector('input[name="firstDay"]:checked').value;
-  const includeFirstDay=(unitInput.value==='day' && firstDayVal==='include');
-  const sign=direction==='past'?-1:1;
-  const answer=calculate(base,n,unitInput.value,sign,includeFirstDay);
-  
-  resultDate.textContent=format(answer);
-  resultDescription.textContent=`${format(base)}の${n}${labels[unitInput.value]}${direction==='past'?'前':'後'}${includeFirstDay ? '（初日含める）' : ''}`;
-}
+        <div class="action-buttons">
+          <button class="clear" id="clearButton" type="button">クリア</button>
+          <button class="calculate" type="submit">日付を計算する</button>
+        </div>
+      </form>
 
-unitInput.addEventListener('change',()=>{
-  updateFirstDayState();
-});
+      <section class="result" aria-live="polite">
+        <div class="result-label">計算結果</div>
+        <div id="resultDate" class="result-date">－</div>
+        <div id="resultDescription" class="result-description">条件を入力してください</div>
+      </section>
 
-document.querySelectorAll('.quick-button').forEach(button=>button.addEventListener('click',()=>{
-  amountInput.value=button.dataset.amount;
-  unitInput.value=button.dataset.unit;
-  updateFirstDayState();
-  document.querySelector('input[name="direction"][value="past"]').checked=true;
-  showResult();
-}));
+      <p class="note">※月・年の計算で同じ日が存在しない場合は、その月の末日とする。</p>
+    </section>
+  </main>
 
-form.addEventListener('submit',e=>{e.preventDefault();showResult()});
-clearButton.addEventListener('click',()=>{
-  const todayStr = inputDate(new Date());
-  baseDateInput.value = todayStr;
-  baseDatePicker.value = todayStr;
-  syncPickersFromText();
-  amountInput.value='';unitInput.value='day';
-  document.querySelector('input[name="direction"][value="past"]').checked=true;
-  document.querySelector('input[name="firstDay"][value="exclude"]').checked=true;
-  updateFirstDayState();
-  baseDateError.textContent='';amountError.textContent='';
-  resultDate.textContent='－';resultDescription.textContent='条件を入力してください';
-});
-yearPicker.addEventListener('change',updateDateFromPickers);
-monthPicker.addEventListener('change',updateDateFromPickers);
-dayPicker.addEventListener('change',updateDateFromPickers);
-
-baseDatePicker.addEventListener('change', e => {
-  if(e.target.value) {
-    baseDateInput.value = e.target.value;
-    syncPickersFromText();
-    baseDateError.textContent = '';
-  }
-});
-
-baseDatePicker.addEventListener('click', e => {
-  if (typeof e.target.showPicker === 'function') {
-    try {
-      e.target.showPicker();
-    } catch (err) {
-      // ignore
-    }
-  }
-});
-
-baseDateInput.addEventListener('change', syncPickersFromText);
-
-const today = inputDate(new Date());
-baseDateInput.value = today;
-baseDatePicker.value = today;
-buildMobilePickers();
-updateFirstDayState();
-resultDate.textContent='－';resultDescription.textContent='条件を入力してください';baseDateError.textContent='';amountError.textContent='';
-</script></body></html>
+  <script src="script.js"></script>
+</body>
+</html>
