@@ -13,10 +13,18 @@
   <main>
     <h1 id="page-title" class="page-title">日付計算</h1>
     <section class="card" aria-labelledby="page-title">
+      
+      <!-- モード切替タブ -->
+      <div class="calc-mode-selector">
+        <button type="button" class="mode-tab active" data-mode="add">日付を加算・減算</button>
+        <button type="button" class="mode-tab" data-mode="diff">2日の期間を計算</button>
+      </div>
+
       <form id="dateForm" novalidate>
         <fieldset class="params-group">
+          <!-- 基準日 / 開始日 -->
           <div class="field base-date-field">
-            <label for="baseDate">基準日</label>
+            <label id="baseDateLabel" for="baseDate">基準日</label>
             <div class="desktop-date-input">
               <input id="baseDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="baseDateError" required>
               <input id="baseDatePicker" type="date" aria-label="カレンダーから日付を選択">
@@ -38,7 +46,18 @@
             <div id="baseDateError" class="error" role="alert"></div>
           </div>
 
-          <div class="input-row">
+          <!-- 終了日 (期間計算モード時のみ表示) -->
+          <div id="endDateContainer" class="field base-date-field mode-diff-only" style="display: none;">
+            <label for="endDate">終了日</label>
+            <div class="desktop-date-input">
+              <input id="endDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="endDateError">
+              <input id="endDatePicker" type="date" aria-label="カレンダーから日付を選択">
+            </div>
+            <div id="endDateError" class="error" role="alert"></div>
+          </div>
+
+          <!-- 加減算入力グループ (加減算モード時のみ表示) -->
+          <div id="addModeInputs" class="input-row mode-add-only">
             <div class="field">
               <label for="amount">数値</label>
               <input id="amount" type="number" min="0" step="1" inputmode="numeric" required>
@@ -66,6 +85,7 @@
             </fieldset>
           </div>
 
+          <!-- 初日指定 -->
           <div class="field field-mb-0">
             <fieldset>
               <legend>初日</legend>
@@ -81,14 +101,15 @@
           </div>
         </fieldset>
 
-        <div class="quick-settings" aria-label="便利な設定">
+        <!-- クイック設定ボタン (加減算モード時のみ表示) -->
+        <div id="quickSettings" class="quick-settings mode-add-only" aria-label="便利な設定">
           <button class="quick-button" type="button" data-amount="45" data-unit="day">45日前</button>
           <button class="quick-button" type="button" data-amount="3" data-unit="month">3カ月前</button>
         </div>
 
         <div class="action-buttons">
           <button class="clear" id="clearButton" type="button">クリア</button>
-          <button class="calculate" type="submit">日付を計算する</button>
+          <button class="calculate" type="submit">計算する</button>
         </div>
       </form>
 
