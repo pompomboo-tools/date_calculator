@@ -59,6 +59,36 @@ main {
   padding: clamp(16px, 3.5vw, 24px);
 }
 
+/* モード切替タブスタイル */
+.calc-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mode-tab {
+  min-height: 40px;
+  background: #f8fafc;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mode-tab:hover {
+  background: #eff6ff;
+  border-color: #aac7f8;
+}
+
+.mode-tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
 /* パラメーター入力エリアのスタイリング */
 .params-group {
   border: 1px solid var(--border);
@@ -382,6 +412,15 @@ button {
     padding: 10px 10px 9px;
     border-radius: 14px;
     box-shadow: 0 5px 18px rgba(27, 43, 74, 0.08);
+  }
+
+  .calc-mode-selector {
+    margin-bottom: 10px;
+  }
+
+  .mode-tab {
+    font-size: 0.82rem;
+    min-height: 36px;
   }
 
   .params-group {
