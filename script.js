@@ -4,6 +4,11 @@ const form = document.getElementById('dateForm');
 const baseDateInput = document.getElementById('baseDate');
 const baseDatePicker = document.getElementById('baseDatePicker');
 const baseDateError = document.getElementById('baseDateError');
+
+const endDateInput = document.getElementById('endDate');
+const endDatePicker = document.getElementById('endDatePicker');
+const endDateError = document.getElementById('endDateError');
+
 const amountInput = document.getElementById('amount');
 const unitInput = document.getElementById('unit');
 const amountError = document.getElementById('amountError');
@@ -15,6 +20,8 @@ const dayPicker = document.getElementById('dayPicker');
 const clearButton = document.getElementById('clearButton');
 const firstDayInputs = document.querySelectorAll('input[name="firstDay"]');
 
+let currentMode = 'add'; // 'add': 日付加減算, 'diff': 2日間の期間計算
+
 const labels = { day: '日', week: '週間', month: 'カ月', year: '年' };
 const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -22,13 +29,14 @@ const pad = n => String(n).padStart(2, '0');
 const inputDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
 function updateFirstDayState() {
-  const isDay = unitInput.value === 'day';
+  const isDay = currentMode === 'diff' || unitInput.value === 'day';
   firstDayInputs.forEach(input => {
     input.disabled = !isDay;
   });
 }
 
 function parseDate(v) {
+  if (!v) return null;
   const match = v.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (!match) return null;
   const y = Number(match[1]);
@@ -94,7 +102,7 @@ function addMonths(d, m) {
   return r;
 }
 
-function calculate(base, n, unit, sign, includeFirstDay) {
+function calculateAdd(base, n, unit, sign, includeFirstDay) {
   const r = new Date(base);
   if (unit === 'day') {
     let days = n;
@@ -109,12 +117,66 @@ function calculate(base, n, unit, sign, includeFirstDay) {
   return r;
 }
 
+// 2日間の差分計算
+function calculateDiff(d1, d2, includeFirstDay) {
+  const start = d1 < d2 ? d1 : d2;
+  const end = d1 < d2 ? d2 : d1;
+  
+  // 日数差（1日＝86400000ミリ秒）
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  let diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+  if (includeFirstDay) {
+    diffDays += 1;
+  }
+
+  const weeks = Math.floor(diffDays / 7);
+  const remDays = diffDays % 7;
+
+  // 年月日の差分算出
+  let yDiff = end.getFullYear() - start.getFullYear();
+  let mDiff = end.getMonth() - start.getMonth();
+  let dayDiff = end.getDate() - start.getDate();
+
+  if (dayDiff < 0) {
+    mDiff--;
+    const prevMonthLastDay = daysInMonth(end.getFullYear(), end.getMonth());
+    dayDiff += prevMonthLastDay;
+  }
+  if (mDiff < 0) {
+    yDiff--;
+    mDiff += 12;
+  }
+
+  const totalMonths = yDiff * 12 + mDiff;
+
+  // 「〇年〇日」計算用（年経過後の余り日数）
+  const yearsDate = new Date(start);
+  yearsDate.setFullYear(yearsDate.getFullYear() + yDiff);
+  let remDaysY = Math.round((end.getTime() - yearsDate.getTime()) / (1000 * 3600 * 24));
+  if (includeFirstDay && yDiff === 0) {
+    remDaysY = diffDays;
+  } else if (includeFirstDay) {
+    remDaysY += 1;
+  }
+
+  return {
+    days: diffDays,
+    weeks: weeks,
+    remDays: remDays,
+    years: yDiff,
+    months: mDiff,
+    remDaysYMD: dayDiff,
+    totalMonths: totalMonths,
+    remDaysY: remDaysY
+  };
+}
+
 function showResult() {
   baseDateError.textContent = '';
   amountError.textContent = '';
+  endDateError.textContent = '';
+
   const base = parseDate(baseDateInput.value);
-  const value = amountInput.value.trim();
-  const n = Number(value);
 
   if (!base) {
     baseDateError.textContent = baseDateInput.value.trim() === '' ? '基準日を入力してください。' : '実在する日付をYYYY-MM-DD形式で入力してください。';
@@ -122,22 +184,75 @@ function showResult() {
     resultDescription.textContent = '入力内容を確認してください';
     return;
   }
-  if (value === '' || !Number.isInteger(n) || n < 0) {
-    amountError.textContent = value === '' ? '数値を入力してください。' : '0以上の整数を入力してください。';
-    resultDate.textContent = '－';
-    resultDescription.textContent = '入力内容を確認してください';
-    return;
+
+  if (currentMode === 'add') {
+    const value = amountInput.value.trim();
+    const n = Number(value);
+
+    if (value === '' || !Number.isInteger(n) || n < 0) {
+      amountError.textContent = value === '' ? '数値を入力してください。' : '0以上の整数を入力してください。';
+      resultDate.textContent = '－';
+      resultDescription.textContent = '入力内容を確認してください';
+      return;
+    }
+
+    const direction = document.querySelector('input[name="direction"]:checked').value;
+    const firstDayVal = document.querySelector('input[name="firstDay"]:checked').value;
+    const includeFirstDay = (unitInput.value === 'day' && firstDayVal === 'include');
+    const sign = direction === 'past' ? -1 : 1;
+    const answer = calculateAdd(base, n, unitInput.value, sign, includeFirstDay);
+
+    resultDate.textContent = format(answer);
+    resultDescription.textContent = `${format(base)}の${n}${labels[unitInput.value]}${direction === 'past' ? '前' : '後'}${includeFirstDay ? '（初日含める）' : ''}`;
+  } else {
+    // 期間計算モード
+    const end = parseDate(endDateInput.value);
+    if (!end) {
+      endDateError.textContent = endDateInput.value.trim() === '' ? '終了日を入力してください。' : '実在する日付をYYYY-MM-DD形式で入力してください。';
+      resultDate.textContent = '－';
+      resultDescription.textContent = '入力内容を確認してください';
+      return;
+    }
+
+    const firstDayVal = document.querySelector('input[name="firstDay"]:checked').value;
+    const includeFirstDay = (firstDayVal === 'include');
+    const diff = calculateDiff(base, end, includeFirstDay);
+
+    resultDate.textContent = `${diff.days.toLocaleString()} 日間`;
+    
+    // 表示形式： 週数：〇週〇日 / 月数：〇カ月〇日 / 年数：〇年〇日 / 年月数：〇年〇カ月〇日
+    let desc = `（${diff.weeks} 週 ${diff.remDays} 日 / ${diff.totalMonths} カ月 ${diff.remDaysYMD} 日 / ${diff.years} 年 ${diff.remDaysY} 日 / ${diff.years} 年 ${diff.months} カ月 ${diff.remDaysYMD} 日）${includeFirstDay ? ' ※初日含む' : ''}`;
+
+    resultDescription.textContent = desc;
   }
-
-  const direction = document.querySelector('input[name="direction"]:checked').value;
-  const firstDayVal = document.querySelector('input[name="firstDay"]:checked').value;
-  const includeFirstDay = (unitInput.value === 'day' && firstDayVal === 'include');
-  const sign = direction === 'past' ? -1 : 1;
-  const answer = calculate(base, n, unitInput.value, sign, includeFirstDay);
-
-  resultDate.textContent = format(answer);
-  resultDescription.textContent = `${format(base)}の${n}${labels[unitInput.value]}${direction === 'past' ? '前' : '後'}${includeFirstDay ? '（初日含める）' : ''}`;
 }
+
+// モード切替処理
+document.querySelectorAll('.mode-tab').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentMode = e.target.dataset.mode;
+
+    const baseLabel = document.getElementById('baseDateLabel');
+    if (currentMode === 'add') {
+      baseLabel.textContent = '基準日';
+      document.querySelectorAll('.mode-add-only').forEach(el => el.style.display = '');
+      document.querySelectorAll('.mode-diff-only').forEach(el => el.style.display = 'none');
+    } else {
+      baseLabel.textContent = '開始日';
+      document.querySelectorAll('.mode-add-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.mode-diff-only').forEach(el => el.style.display = 'block');
+      if (!endDateInput.value) {
+        endDateInput.value = inputDate(new Date());
+        endDatePicker.value = endDateInput.value;
+      }
+    }
+    updateFirstDayState();
+    resultDate.textContent = '－';
+    resultDescription.textContent = '条件を入力してください';
+  });
+});
 
 // イベントリスナーの設定
 unitInput.addEventListener('change', () => {
@@ -161,6 +276,8 @@ clearButton.addEventListener('click', () => {
   const todayStr = inputDate(new Date());
   baseDateInput.value = todayStr;
   baseDatePicker.value = todayStr;
+  endDateInput.value = todayStr;
+  endDatePicker.value = todayStr;
   syncPickersFromText();
   amountInput.value = '';
   unitInput.value = 'day';
@@ -168,6 +285,7 @@ clearButton.addEventListener('click', () => {
   document.querySelector('input[name="firstDay"][value="exclude"]').checked = true;
   updateFirstDayState();
   baseDateError.textContent = '';
+  endDateError.textContent = '';
   amountError.textContent = '';
   resultDate.textContent = '－';
   resultDescription.textContent = '条件を入力してください';
@@ -185,13 +303,22 @@ baseDatePicker.addEventListener('change', e => {
   }
 });
 
+endDatePicker.addEventListener('change', e => {
+  if (e.target.value) {
+    endDateInput.value = e.target.value;
+    endDateError.textContent = '';
+  }
+});
+
 baseDatePicker.addEventListener('click', e => {
   if (typeof e.target.showPicker === 'function') {
-    try {
-      e.target.showPicker();
-    } catch (err) {
-      // ignore
-    }
+    try { e.target.showPicker(); } catch (err) {}
+  }
+});
+
+endDatePicker.addEventListener('click', e => {
+  if (typeof e.target.showPicker === 'function') {
+    try { e.target.showPicker(); } catch (err) {}
   }
 });
 
@@ -201,9 +328,12 @@ baseDateInput.addEventListener('change', syncPickersFromText);
 const today = inputDate(new Date());
 baseDateInput.value = today;
 baseDatePicker.value = today;
+endDateInput.value = today;
+endDatePicker.value = today;
 buildMobilePickers();
 updateFirstDayState();
 resultDate.textContent = '－';
 resultDescription.textContent = '条件を入力してください';
 baseDateError.textContent = '';
 amountError.textContent = '';
+endDateError.textContent = '';
