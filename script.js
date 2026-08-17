@@ -386,3 +386,25 @@ resultDescription.textContent = '条件を入力してください';
 baseDateError.textContent = '';
 amountError.textContent = '';
 endDateError.textContent = '';
+
+// ダブルタップによるズーム動作を無効化
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (event) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
+
+// 2本指でのピンチズーム（拡大・縮小）動作を無効化
+document.addEventListener('touchstart', (event) => {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}, { passive: false });
+
+// Safari/iOSのジェスチャー（ピンチイン・アウト）を無効化
+document.addEventListener('gesturestart', (event) => {
+  event.preventDefault();
+});
