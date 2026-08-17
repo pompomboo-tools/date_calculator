@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="./favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180">
+  <title>日付計算ツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1 id="page-title" class="page-title">日付計算</h1>
+    <section class="card" aria-labelledby="page-title">
+      
+      <!-- モード切替タブ -->
+      <div class="calc-mode-selector">
+        <button type="button" class="mode-tab active" data-mode="add">日付を加算・減算</button>
+        <button type="button" class="mode-tab" data-mode="diff">2日の期間を計算</button>
+      </div>
+
+      <form id="dateForm" novalidate>
+        <fieldset class="params-group">
+          <!-- 基準日 / 開始日 -->
+          <div class="field base-date-field">
+            <label id="baseDateLabel" for="baseDate">基準日</label>
+            <div class="desktop-date-input">
+              <input id="baseDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="baseDateError" required>
+              <input id="baseDatePicker" type="date" aria-label="カレンダーから日付を選択">
+            </div>
+            <div id="mobileDatePickers" class="mobile-date-pickers" aria-label="基準日を年月日で設定">
+              <div class="picker-field">
+                <label for="yearPicker">年</label>
+                <select id="yearPicker" aria-label="年"></select>
+              </div>
+              <div class="picker-field">
+                <label for="monthPicker">月</label>
+                <select id="monthPicker" aria-label="月"></select>
+              </div>
+              <div class="picker-field">
+                <label for="dayPicker">日</label>
+                <select id="dayPicker" aria-label="日"></select>
+              </div>
+            </div>
+            <div id="baseDateError" class="error" role="alert"></div>
+          </div>
+
+          <!-- 終了日 (期間計算モード時のみ表示) -->
+          <div id="endDateContainer" class="field base-date-field mode-diff-only" style="display: none;">
+            <label for="endDate">終了日</label>
+            <div class="desktop-date-input">
+              <input id="endDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例：2026-08-10" aria-describedby="endDateError">
+              <input id="endDatePicker" type="date" aria-label="カレンダーから日付を選択">
+            </div>
+            <div id="mobileEndPickers" class="mobile-date-pickers" aria-label="終了日を年月日で設定">
+              <div class="picker-field">
+                <label for="endYearPicker">年</label>
+                <select id="endYearPicker" aria-label="終了年"></select>
+              </div>
+              <div class="picker-field">
+                <label for="endMonthPicker">月</label>
+                <select id="endMonthPicker" aria-label="終了月"></select>
+              </div>
+              <div class="picker-field">
+                <label for="endDayPicker">日</label>
+                <select id="endDayPicker" aria-label="終了日"></select>
+              </div>
+            </div>
+            <div id="endDateError" class="error" role="alert"></div>
+          </div>
+
+          <!-- 加減算入力グループ (加減算モード時のみ表示) -->
+          <div id="addModeInputs" class="input-row mode-add-only">
+            <div class="field">
+              <label for="amount">数値</label>
+              <input id="amount" type="number" min="0" step="1" inputmode="numeric" required>
+              <div id="amountError" class="error" role="alert"></div>
+            </div>
+            <div class="field">
+              <label for="unit">単位</label>
+              <select id="unit">
+                <option value="day">日</option>
+                <option value="week">週間</option>
+                <option value="month">カ月</option>
+                <option value="year">年</option>
+              </select>
+            </div>
+            <fieldset class="field">
+              <legend>方向</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="direction" value="past" checked>前
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="direction" value="future">後
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <!-- 初日指定 -->
+          <div class="field field-mb-0">
+            <fieldset>
+              <legend>初日</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="firstDay" value="exclude" checked>含めない
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="firstDay" value="include">含める
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </fieldset>
+
+        <!-- クイック設定ボタン (加減算モード時のみ表示) -->
+        <div id="quickSettings" class="quick-settings mode-add-only" aria-label="便利な設定">
+          <button class="quick-button" type="button" data-amount="45" data-unit="day">45日前</button>
+          <button class="quick-button" type="button" data-amount="3" data-unit="month">3カ月前</button>
+        </div>
+
+        <div class="action-buttons">
+          <button class="clear" id="clearButton" type="button">クリア</button>
+          <button class="calculate" type="submit">計算する</button>
+        </div>
+      </form>
+
+      <section class="result" aria-live="polite">
+        <div class="result-label">計算結果</div>
+        <div id="resultDate" class="result-date">－</div>
+        <div id="resultDescription" class="result-description">条件を入力してください</div>
+      </section>
+
+      <p class="note">※月・年の計算で同じ日が存在しない場合は、その月の末日とする。</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
